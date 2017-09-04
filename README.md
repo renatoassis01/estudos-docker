@@ -275,3 +275,35 @@ docker update -c 512 af74d84dbbb1
 docker inspect renato | grep -i shares
             "CpuShares": 512,
 ```
+
+## DESCOMPLICANDO O DOCKER V1 - 08 - Volumes e container data-only
+
+* O que são volumes: São nada mais que diretórios do host montados no container. 
+  Diferentes do containeres, estes se permanecem mesmo com a destruição do container. 
+
+  docker run/create PARAMETROS --volume/-v HOST DIRETORIO:DIRETORIO CONTAINER IMAGE 
+
+  ***Exemplo:***
+  
+  ```bash
+    docker run -it --volume /home/renato/workspace/estudos-docker:/volume ubuntu
+
+    ls /home/renato/workspace/estudos-docker
+     Dockerfile  README.md
+
+    docker attach 4b4df862d7a8
+
+    root@4b4df862d7a8:/volume# ls
+    Dockerfile  README.md
+  ```
+
+
+   * criando um continer data-only somente para servidor de referencia para outros container. Este container não precisa nem ficar em execução
+
+
+   ***Exemplo:***
+
+   ```bash
+   docker create -v /data --name dbdados centos
+
+   ``` 
