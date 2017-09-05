@@ -306,4 +306,117 @@ docker inspect renato | grep -i shares
    ```bash
    docker create -v /data --name dbdados centos
 
+   ```
+
+  * O parâmetro **--volumes-from** importa volumes de um container para outros container
+
+
+   ***Exemplo:***
+
+   ```bash
+   docker run -d -p  --name pgsql2 --volumes-from dbdados kamui/postgresql 
+
+   ```
+   ***Nota:*** dbdados é um volume de um outro container chamado **dbdados**
+
+  * O parâmetro **-p** expoe um porta do container para o host. Ou seja uma ligação entre uma porta do host
+   e uma porta do container a sintaxe é : 
+   ***-p PORTA DO HOST:PORTA DO CONTAINER***
+
+   ***Exemplo:***
+
+   ```bash
+    docker run -p 5433:5432 --name pgsql1 kamui/postgresql
    ``` 
+
+   ## DESCOMPLICANDO O DOCKER V1 - 09 - Dockerfile, Dockerfile e mais Dockerfiles!
+
+   * [Dockerfile](https://docs.docker.com/engine/reference/builder/)  é um arquivo semelhante aos arquivos makefiles, usados para a compilação de programas. DockerFile descreve como deve ser as configuraçõe de um container, como por exemplo qual imagem ele usará, qual volume será atachado ao container e ainda o limite de cpu e memória RAM este container terá.
+
+
+    ***Nota:*** O arquivo dockerfile deve-se ter obrigatóriamente o nome **Dockerfile**
+
+   ### Opções do arquivo Dockerfile:
+
+   **FROM**: Determina qual imagem usará.
+   
+   ***Nota:*** Obrigatoriamente deve ser o primeiro parâmetro do docker file
+   
+   ***Exemplo:*** 
+   
+   ```bash
+   FROM debian:latest
+   ```
+   
+  **USER**: Define qual o usuário default do container
+     
+   ***Nota:*** Caso não tenha usuário definido o usuário será o ***root***
+   
+   ***Exemplo:*** 
+   
+   ```bash
+   USER apache
+   ```
+
+   **RUN**: Roda comandos dentro do container
+
+   ***Nota:*** Cada RUN adiciona uma camada no container. O interessante é ter menos camadas
+               Concatene ao máximo seus comandos
+
+
+   ***Exemplo:***
+
+   ```bash
+   RUN apt-get install pacote1 pacote2 pacote3 pacote4 \
+                       pacote5 pacote6 pacote7 pacote8 \
+       && wget http://foo.bar/file.tar.gz 
+   ```
+   
+   **ADD**: Adiciona um ou mais arquivos da máquina host para dentro do container
+
+   ***Exemplo:*** 
+   ```bash
+   ADD http://example.com/big.tar.xz /usr/src/things/
+   ```
+
+   **CMD**: Executa comandos dentro do container. Todo comando é filho de bash. 
+     
+   ***Exemplo:*** 
+   
+   ```bash
+   CMD ["sh", "-c", "echo", "$HOME"]
+   ```
+
+   **LABEL**: Adiciona informações no metadata de um container
+
+   **COPY**: Semelhante ao **ADD** porém copia um arquivo ou diretório para dentro do container
+    
+   ***Exemplo:*** 
+   
+   ```bash
+   COPY requirements.txt /tmp/
+   ```
+
+   **ENTRYPOINT**: É usado para configurar o comando principal da imagem, permitindo que essa imagem seja executada como se fosse esse comando. Caso o entrypoint esteja definido o **CMD** é usado como parâmetro para ele. 
+   ***Nota:*** caso esse comando do container se encerrer o container automaticamente é parado.
+
+   ***Exemplo:*** 
+   
+   ```bash
+   ENTRYPOINT [/usr/bin/apachectl -d /etc/apache2 -e info -D FOREGROUND]
+   ```
+
+   **ENV**: Define variaveis de ambiente do container
+
+   ***Exemplo:*** 
+   
+   ```bash
+   ENV FOO="BAR"
+   ```
+   **EXPOSE**: Expõe a porta do container
+
+   ***Exemplo:*** 
+   
+   ```bash
+   EXPOSE 80, 443
+   ```
